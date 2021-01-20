@@ -1,12 +1,13 @@
 FROM ubuntu:20.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-ENV K8S=v1.19.0
-ENV username=k8s
+ENV k8s=v1.19.0 \
+    terraform=v0.13 \
+    argocd=v1.8 \
+    username=dev
 
 ## -- PACKAGES -------------------------------------------------------------
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-RUN apt-get update && apt-get install --no-install-recommends -y \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -26,7 +27,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 ## -- KUBECTL -------------------------------------------------------------
 RUN curl -fLo /usr/local/bin/kubectl \
-    "https://storage.googleapis.com/kubernetes-release/release/$K8S/bin/linux/amd64/kubectl" && \
+    "https://storage.googleapis.com/kubernetes-release/release/$k8s/bin/linux/amd64/kubectl" && \
     chmod +x /usr/local/bin/kubectl
 
 ## -- USER -------------------------------------------------------------
@@ -78,11 +79,11 @@ RUN source /opt/functions.sh && \
   getGithubRelease "derailed/k9s" "v0" "k9s" && \
   getGithubRelease "linkerd/linkerd" "1" "linkerd" && \
   getGithubRelease "linkerd/linkerd2" "stable-2" "linkerd2" && \
-  getGithubRelease "argoproj/argo-cd" "v1.8" "argocd" && \
+  getGithubRelease "argoproj/argo-cd" "$argocd" "argocd" && \
   getGithubRelease "FairwindsOps/pluto" "v4" "pluto" && \
   getGithubRelease "vmware-tanzu/velero" "v1" "velero" && \
   getGithubRelease "terraform-docs/terraform-docs" "v0" "terraform-docs" && \
-  getGithubRelease "hashicorp/terraform" "v0.13" "terraform" "https://releases.hashicorp.com/terraform/TAG/terraform_TAG_linux_amd64.zip" && \
+  getGithubRelease "hashicorp/terraform" "$terraform" "terraform" "https://releases.hashicorp.com/terraform/TAG/terraform_TAG_linux_amd64.zip" && \
   getGithubRelease "hashicorp/vault" "v1" "vault" "https://releases.hashicorp.com/vault/TAG/vault_TAG_linux_amd64.zip" && \
   chmod +x /usr/local/bin/*
 
