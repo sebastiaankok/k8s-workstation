@@ -1,0 +1,15 @@
+plugins=(git kubectl zsh-kubectl-prompt)
+
+source $ZSH/oh-my-zsh.sh
+source <(kubectl completion zsh)
+
+export PATH=~/.local/bin:$PATH
+export PATH=$PATH:/home/$username/go/bin
+
+export CLICOLOR=1
+export LSCOLORS=ExFxBxDxCxegedabagacad
+RPROMPT='%{$fg[blue]%}($ZSH_KUBECTL_PROMPT)%{$reset_color%}'
+
+alias vi=vim
+function kpass () { jq '.data | map_values(@base64d)' }
+
