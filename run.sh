@@ -6,7 +6,7 @@ homedir="$HOME/k8s-workstation"
 godir="$HOME/go"
 
 # zsh theme
-theme="kafeitu"
+theme="gruvbox"
 
 # Username that is used in Docker image
 username="dev"

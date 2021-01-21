@@ -28,7 +28,7 @@ docker build . -t k8s-workstation
 docker run \
   -v ~/k8s-workstation:/home/dev \
   -v ~/go:/home/dev/go
-  -e ZSH_THEME=kafeitu
+  -e ZSH_THEME=gruvbox
   -ti k8s-workstation
 ```
 
