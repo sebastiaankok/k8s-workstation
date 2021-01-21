@@ -64,6 +64,9 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     chown -R ${username:-user}: "$ZSH/cache"
 COPY config/zsh/zshrc "$ZSH"
 
+### -- Custom theme based on gruvbox and kafeitu
+COPY config/zsh/gruvbox.zsh-theme "$ZSH/themes"
+
 ### -- plugins
 RUN git clone https://github.com/superbrothers/zsh-kubectl-prompt.git "$ZSH/plugins/zsh-kubectl-prompt"
 
