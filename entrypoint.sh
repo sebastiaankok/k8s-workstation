@@ -3,7 +3,7 @@
 if [ -z "$ZSH_THEME" ]; then
   export ZSH_THEME=gruvbox
 else
-  export $ZSH_THEME
+  export ZSH_THEME="$ZSH_THEME"
 fi
 
 if [ ! -f ~/.zshrc ] ; then

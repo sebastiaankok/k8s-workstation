@@ -14,6 +14,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
     gnupg-agent \
     software-properties-common \
     unzip \
+    less \
+    jq \
     git \
     sudo \
     openssh-client \
@@ -73,22 +75,25 @@ RUN git clone https://github.com/superbrothers/zsh-kubectl-prompt.git "$ZSH/plug
 RUN usermod --shell /bin/zsh "${username:-user}"
 
 ### -- TOOLS -------------------------------------------------------------
-COPY scripts/functions.sh /opt
-RUN source /opt/functions.sh && \
-# getGithubRelease <repo> <filter_tag> <binary_name> <custom_url>
-  getGithubRelease "helm/helm" "v2" "helm2" && \
-  getGithubRelease "helm/helm" "v3" "helm" && \
-  getGithubRelease "wercker/stern" "1" "stern" && \
-  getGithubRelease "derailed/k9s" "v0" "k9s" && \
-  getGithubRelease "linkerd/linkerd" "1" "linkerd" && \
-  getGithubRelease "linkerd/linkerd2" "stable-2" "linkerd2" && \
-  getGithubRelease "argoproj/argo-cd" "$argocd" "argocd" && \
-  getGithubRelease "FairwindsOps/pluto" "v4" "pluto" && \
-  getGithubRelease "vmware-tanzu/velero" "v1" "velero" && \
-  getGithubRelease "terraform-docs/terraform-docs" "v0" "terraform-docs" && \
-  getGithubRelease "hashicorp/terraform" "$terraform" "terraform" "https://releases.hashicorp.com/terraform/TAG/terraform_TAG_linux_amd64.zip" && \
-  getGithubRelease "hashicorp/vault" "v1" "vault" "https://releases.hashicorp.com/vault/TAG/vault_TAG_linux_amd64.zip" && \
-  chmod +x /usr/local/bin/*
+RUN curl -fLo /usr/local/bin/dl-github-binary \
+    https://raw.githubusercontent.com/sebastiaankok/dl-github-binary/main/dl-github-binary.sh && \
+    chmod +x /usr/local/bin/dl-github-binary && \
+    ### -- Download binaries && \
+    dl-github-binary --repo helm/helm --filter v2 --save-as helm2 --dir /usr/local/bin && \
+    dl-github-binary --repo helm/helm --filter v3 --save-as helm --dir /usr/local/bin && \
+    dl-github-binary --repo wercker/stern --filter 1 --save-as stern --dir /usr/local/bin && \
+    dl-github-binary --repo derailed/k9s --filter v0 --save-as k9s --dir /usr/local/bin && \
+    dl-github-binary --repo linkerd/linkerd --filter 1 --save-as linkerd --dir /usr/local/bin && \
+    dl-github-binary --repo linkerd/linkerd2 --filter stable-2 --save-as linkerd2 --dir /usr/local/bin && \
+    dl-github-binary --repo argoproj/argo-cd --filter ${argocd} --save-as argocd --dir /usr/local/bin && \
+    dl-github-binary --repo FairwindsOps/pluto --filter v4 --save-as pluto --dir /usr/local/bin && \
+    dl-github-binary --repo vmware-tanzu/velero --filter v1 --save-as velero --dir /usr/local/bin && \
+    dl-github-binary --repo terraform-docs/terraform-docs --filter v0 --save-as terraform-docs --dir /usr/local/bin && \
+    dl-github-binary --repo hashicorp/terraform --filter ${terraform} --save-as terraform --dir /usr/local/bin \
+    -c "https://releases.hashicorp.com/terraform/GITHUB_TAG/terraform_GITHUB_TAG_linux_amd64.zip" && \
+    dl-github-binary --repo hashicorp/vault --filter v1 --save-as vault --dir /usr/local/bin \
+    -c "https://releases.hashicorp.com/vault/GITHUB_TAG/vault_GITHUB_TAG_linux_amd64.zip" && \
+    chmod +x /usr/local/bin/*
 
 ### -- CLOUD -------------------------------------------------------------
 
@@ -99,5 +104,5 @@ RUN find /root -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} \;
 USER ${username:-user}
 WORKDIR /home/${username:-user}
 
-COPY scripts/entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
