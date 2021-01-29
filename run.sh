@@ -31,5 +31,6 @@ else
     -v $homedir:/home/$username \
     -v $godir:/home/$username/go \
     -e ZSH_THEME=$theme \
+    -p 8080:8080
     -ti "$image"
 fi
