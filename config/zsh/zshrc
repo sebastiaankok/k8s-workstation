@@ -3,6 +3,7 @@ plugins=(git kubectl zsh-kubectl-prompt ssh-agent)
 source $ZSH/oh-my-zsh.sh
 
 export PATH=~/.local/bin:$PATH
+export PATH=~/bin:$PATH
 export PATH=$PATH:/home/$username/go/bin
 
 # -- set colors for dirs/files etc

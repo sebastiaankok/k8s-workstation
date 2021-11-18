@@ -4,6 +4,7 @@ set runtimepath+=/etc/vim/autoload
 let g:coc_config_home="/etc/vim"
 let g:coc_data_home="/etc/vim/coc"
 
+set encoding=utf8
 set t_Co=256
 syntax on
 set nu
