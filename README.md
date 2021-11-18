@@ -51,10 +51,10 @@ elif [ -n "$ps" ] && [ "$( wc -l <<< "$ps")" -eq 1 ] ; then
 # No containers running, start new one
 else
   echo "Starting new k8s-workstation container ..."
-  ## Run container and expose ports 8080-8085 (for exposing services) and port 8250 (vault) 
+  ## Run container and expose ports 8080-8085 (for exposing services) and port 8250 (vault)
   docker run \
-     -v $homedir:/home/dev \
-     -e ZSH_THEME=$theme \
+     -v "$homedir":/home/k8s \
+     -e ZSH_THEME="$theme" \
      -p 8080-8085:8080-8085 \
      -p 8250:8250 \
      -ti $image
