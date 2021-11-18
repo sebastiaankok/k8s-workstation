@@ -20,7 +20,7 @@ mkdir ~/k8s-workstation
 ```bash
  docker run \
     -v ~/k8s-workstation:/home/k8s \
-    -e ZSH_THEME=$theme \
+    -e ZSH_THEME=gruvbox \
     -ti k8s-workstation
 ```
 
