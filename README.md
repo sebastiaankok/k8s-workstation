@@ -19,11 +19,8 @@ mkdir ~/k8s-workstation
 * to run the container
 ```bash
  docker run \
-    -v ~/k8s-workstation:/home/dev \
-    -v $godir:/home/$username/go \
+    -v ~/k8s-workstation:/home/k8s \
     -e ZSH_THEME=$theme \
-    -p 8080-8085:8080-8085 \
-    -p 8250:8250 \
     -ti k8s-workstation
 ```
 
