@@ -1,54 +1,82 @@
 # k8s-workstation
 
-An immutable Docker environment that I use as an experiment when working with Kubernetes and Golang.
-I started this project because I regularly switch between Windows and Linux distros. Running the environment in Docker saves me time re-installing and configuring all the VIM and ZSH plugins.
+I started this project to be able to easily switch between different operating systems while maintaining a consistent environment for working with Linux, Kubernetes and programming languages. The Docker image uses an Ubuntu base image in which zsh and vim plugins are configured and installed. In addition, some scripts are added to download various CLI tools.
 
-* getGithubRelease script is used to fetch binaries of some commonly used tools.
-
-- helm2/helm3
-- stern
-- k9s
-- linkerd/linkerd2
-- argo-cd
-- pluto
-- velero
-- terraform
-- terraform-docs
-- vault
+![gif](images/k8s-workstation.gif)
 
 ## Getting Started
 
-* to build
-```
+* build the container
+```bash
 docker build . -t k8s-workstation
 ```
 
-* to run with local volumes
-```
-docker run \
-  -v ~/k8s-workstation:/home/dev \
-  -v ~/go:/home/dev/go
-  -e ZSH_THEME=gruvbox
-  -p 8080:8080
-  -ti k8s-workstation
+* create directory that is used as local volume
+```bash
+mkdir ~/k8s-workstation
 ```
 
-### Golang autocompletion
-For the golang autocompletion to work, some golang binaries are required. 
+* to run the container
+```bash
+ docker run \
+    -v ~/k8s-workstation:/home/dev \
+    -v $godir:/home/$username/go \
+    -e ZSH_THEME=$theme \
+    -p 8080-8085:8080-8085 \
+    -p 8250:8250 \
+    -ti k8s-workstation
+```
 
+* install startup script in /usr/local/bin for easy access. 
+```bash
+#!/bin/bash
+
+image="k8s-workstation"
+homedir="$HOME/k8s-workstation"
+theme="gruvbox"
+
+if [ ! -d "$homedir" ] ; then echo "dir doesn't exist: $homedir" ; exit 1 ; fi
+
+# Find running containers
+ps="$(docker ps | grep "$image" | grep -v "CONTAINER")"
+
+# If multiple containers are running, exit
+if [ "$( wc -l <<< "$ps")" -gt 1 ]; then
+  echo "Multiple $image containers running:"
+  echo "$ps" && exit 1
+# If only one container is running, exec
+elif [ -n "$ps" ] && [ "$( wc -l <<< "$ps")" -eq 1 ] ; then
+  echo "Exec into container $(awk '{print $1 " " $2}' <<< $ps)"
+  docker exec -ti "$(awk '{print $1}' <<< $ps)" /bin/zsh
+# No containers running, start new one
+else
+  echo "Starting new k8s-workstation container ..."
+  ## Run container and expose ports 8080-8085 (for exposing services) and port 8250 (vault) 
+  docker run \
+     -v $homedir:/home/dev \
+     -e ZSH_THEME=$theme \
+     -p 8080-8085:8080-8085 \
+     -p 8250:8250 \
+     -ti $image
+fi
+```
+
+### Exposing services from container
+
+#### Windows WSL2
+
+Make sure to run the container with --publish (-p) and a set of ports.
+Also make sure the service uses listen address 0.0.0.0
+
+* kubectl example:
+`kubectl port-forward pods/podinfo-7cd6c96d57-ctlpn 8080:8080 --address 0.0.0.0`
+
+* vault example:
+`vault login -method=oidc listenaddress=0.0.0.0`
+
+### vim Autocompletion
+#### Golang
 * open vim and run `:GoInstallBinaries` to install binaries in $GOPATH (/home/dev/go).
 
-### kubectl port-forward
-To access port-forwards on host, make sure to bind on 0.0.0.0 address.
-Also make sure that the port is exposed when running the k8s-workstation container.
-
-* `kubectl port-forward --address 0.0.0.0 svc/argocd-server -n argocd 8080:443`
-
-## Todo
-- Retrieve secrets like kubeconfig from Vault on container start
-
-## Limitations
-- No docker in docker
-- Image size large due to prepacking multiple tools
-
-
+### Python
+* pip install jedi
