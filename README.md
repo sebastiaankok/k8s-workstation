@@ -76,7 +76,7 @@ Also make sure the service uses listen address 0.0.0.0
 
 ### vim Autocompletion
 #### Golang
-* open vim and run `:GoInstallBinaries` to install binaries in $GOPATH (/home/dev/go).
+* open vim and run `:GoInstallBinaries` to install binaries in $GOPATH (/home/k8s/go).
 
 ### Python
 * pip install jedi
