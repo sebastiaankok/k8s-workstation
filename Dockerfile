@@ -2,6 +2,7 @@ FROM ubuntu:21.04
 
 ENV k8s=v1.21.0 \
     username="k8s" \
+    bitwarden="1.19.1" \
     coc_plugins="coc-yaml coc-docker coc-golang coc-json coc-php coc-python coc-sh"
 
 ## -- PACKAGES -------------------------------------------------------------
@@ -82,6 +83,11 @@ RUN usermod --shell /bin/zsh "${username:-user}"
 RUN curl -fLo /usr/local/bin/dl-github-binary \
     https://raw.githubusercontent.com/sebastiaankok/dl-github-binary/main/dl-github-binary.sh && \
     chmod +x /usr/local/bin/dl-github-binary
+
+RUN curl -fLo "/tmp/bw-linux-$bitwarden.zip" \
+    "https://github.com/bitwarden/cli/releases/download/v$bitwarden/bw-linux-$bitwarden.zip" && \
+    unzip "/tmp/bw-linux-$bitwarden.zip" -d /usr/local/bin && \
+    chmod +x "/usr/local/bin/bw"
 
 ### -- CLEANUP -------------------------------------------------------------
 RUN find /root -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} \;
