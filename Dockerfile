@@ -14,6 +14,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
     gnupg-agent \
     software-properties-common \
     unzip \
+    bzip2 \
     dnsutils \
     net-tools \
     iproute2 \
